@@ -6,7 +6,7 @@ import pytest as pytest
 from iomete_sdk import SparkJobApiClient, ClientError
 
 TEST_TOKEN = os.environ.get("TEST_TOKEN")
-WORKSPACE_ID = "se5kv-7kq"
+WORKSPACE_ID = "pceh7-816"
 
 SPARK_VERSION = "3.2.1"
 
@@ -58,23 +58,25 @@ def test_create_job_successful(job_client, create_payload):
     job_client.delete_job_by_id(job_id=response["id"])
 
 
-# todo: fix this test
-# def test_update_job(job_client, create_payload):
-#     # create job
-#     job_create_response = job_client.create_job(payload=create_payload)
-#
-#     # update job
-#     update_payload = job_create_response.copy()
-#     update_payload["job_type"] = "SCHEDULED"
-#     job_update_response = job_client.update_job(job_id=job_create_response["id"], payload=update_payload)
-#
-#     assert job_update_response["job_type"] == "SCHEDULED"
-#     assert job_update_response["name"] == job_create_response["name"]
-#     assert job_update_response["workspace_id"] == job_create_response["workspace_id"]
-#     assert job_update_response["id"] == job_create_response["id"]
-#
-#     # clean up
-#     job_client.delete_job_by_id(job_id=job_update_response["id"])
+def test_update_job(job_client, create_payload):
+    # create job
+    job_create_response = job_client.create_job(payload=create_payload)
+
+    cron_schedule = "0 0 */1 * *"
+
+    # update job
+    update_payload = job_create_response.copy()
+    update_payload["schedule"] = cron_schedule
+    job_update_response = job_client.update_job(job_id=job_create_response["id"], payload=update_payload)
+
+    assert job_update_response["schedule"] == cron_schedule
+    assert job_update_response["job_type"] == "SCHEDULED"
+    assert job_update_response["name"] == job_create_response["name"]
+    assert job_update_response["workspace_id"] == job_create_response["workspace_id"]
+    assert job_update_response["id"] == job_create_response["id"]
+
+    # clean up
+    job_client.delete_job_by_id(job_id=job_update_response["id"])
 
 
 def test_get_jobs(job_client):
@@ -138,7 +140,6 @@ def test_get_job_runs(job_client, create_payload):
     job_client.delete_job_by_id(job_id=job["id"])
 
 
-# todo: Fix this test
 def test_submit_job_run(job_client, create_payload):
     # create job
     job = job_client.create_job(payload=create_payload)
@@ -146,8 +147,11 @@ def test_submit_job_run(job_client, create_payload):
     # submit job run
     response = job_client.submit_job_run(job_id=job["id"])
 
+    run_id = response["id"]
+
+    assert run_id is not None
     assert response["job_id"] == job["id"]
-    assert response["id"] is not None
 
     # clean up
+    job_client.cancel_job_run(job_id=job["id"], run_id=run_id)
     job_client.delete_job_by_id(job_id=job["id"])

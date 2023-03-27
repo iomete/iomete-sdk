@@ -4,8 +4,6 @@ from dataclasses import dataclass
 
 import requests
 
-# todo: make the base url dynamic
-BASE_URL = "https://dev.iomete.com"
 SPARK_JOB_ENDPOINT = "/api/v1/workspaces/{workspace_id}/spark-jobs"
 
 
@@ -24,9 +22,20 @@ class SparkJobApiClient:
 
     workspace_id: str
     api_key: str
+    base_url: str = None
+    spark_job_endpoint: str = None
 
-    def _endpoint(self):
-        return BASE_URL + SPARK_JOB_ENDPOINT.format(workspace_id=self.workspace_id)
+    def __post_init__(self):
+        controller_host = self._get_controller_host()
+        self.logger.debug(f"Controller host: {controller_host}")
+
+        self.base_url = f"https://{self._get_controller_host()}"
+        self.spark_job_endpoint = self.base_url + SPARK_JOB_ENDPOINT.format(workspace_id=self.workspace_id)
+
+    def _get_controller_host(self):
+        result = self._call_api(
+            method="GET", url=f"https://account.iomete.com/api/v1/workspaces/{self.workspace_id}/info")
+        return result["controller_endpoint"]
 
     def _call_api(self, method: str, url: str, payload: dict = None, ):
         try:
@@ -49,34 +58,34 @@ class SparkJobApiClient:
             raise
 
     def create_job(self, payload: dict):
-        return self._call_api(method="POST", url=self._endpoint(), payload=payload)
+        return self._call_api(method="POST", url=self.spark_job_endpoint, payload=payload)
 
     def update_job(self, job_id: str, payload: dict):
-        return self._call_api(method="PUT", url=f"{self._endpoint()}/{job_id}", payload=payload)
+        return self._call_api(method="PUT", url=f"{self.spark_job_endpoint}/{job_id}", payload=payload)
 
     def get_jobs(self):
-        return self._call_api(method="GET", url=self._endpoint())
+        return self._call_api(method="GET", url=self.spark_job_endpoint)
 
     def get_job_by_id(self, job_id: str):
-        return self._call_api(method="GET", url=f"{self._endpoint()}/{job_id}")
+        return self._call_api(method="GET", url=f"{self.spark_job_endpoint}/{job_id}")
 
     def delete_job_by_id(self, job_id: str):
-        return self._call_api(method="DELETE", url=f"{self._endpoint()}/{job_id}")
+        return self._call_api(method="DELETE", url=f"{self.spark_job_endpoint}/{job_id}")
 
     def get_job_runs(self, job_id: str):
-        return self._call_api(method="GET", url=f"{self._endpoint()}/{job_id}/runs")
+        return self._call_api(method="GET", url=f"{self.spark_job_endpoint}/{job_id}/runs")
 
     def submit_job_run(self, job_id: str):
-        return self._call_api(method="POST", url=f"{self._endpoint()}/{job_id}/runs")
+        return self._call_api(method="POST", url=f"{self.spark_job_endpoint}/{job_id}/runs")
 
     def cancel_job_run(self, job_id: str, run_id: str):
-        return self._call_api(method="DELETE", url=f"{self._endpoint()}/{job_id}/runs/{run_id}")
+        return self._call_api(method="DELETE", url=f"{self.spark_job_endpoint}/{job_id}/runs/{run_id}")
 
     def get_job_run_by_id(self, job_id: str, run_id: str):
-        return self._call_api(method="GET", url=f"{self._endpoint()}/{job_id}/runs/{run_id}")
+        return self._call_api(method="GET", url=f"{self.spark_job_endpoint}/{job_id}/runs/{run_id}")
 
     def get_job_run_logs(self, job_id: str, run_id: str):
-        return self._call_api(method="GET", url=f"{self._endpoint()}/{job_id}/runs/{run_id}/logs")
+        return self._call_api(method="GET", url=f"{self.spark_job_endpoint}/{job_id}/runs/{run_id}/logs")
 
     def get_job_run_metrics(self, job_id: str, run_id: str):
-        return self._call_api(method="GET", url=f"{self._endpoint()}/{job_id}/runs/{run_id}/metrics")
+        return self._call_api(method="GET", url=f"{self.spark_job_endpoint}/{job_id}/runs/{run_id}/metrics")
