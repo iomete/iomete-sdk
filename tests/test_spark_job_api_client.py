@@ -1,4 +1,5 @@
 import os
+import time
 import uuid
 
 import pytest as pytest
@@ -145,12 +146,15 @@ def test_submit_job_run(job_client, create_payload):
     job = job_client.create_job(payload=create_payload)
 
     # submit job run
-    response = job_client.submit_job_run(job_id=job["id"])
+    response = job_client.submit_job_run(job_id=job["id"], payload={})
 
     run_id = response["id"]
 
     assert run_id is not None
     assert response["job_id"] == job["id"]
+
+    # sleep 5 seconds before cleaning up
+    time.sleep(5)
 
     # clean up
     job_client.cancel_job_run(job_id=job["id"], run_id=run_id)

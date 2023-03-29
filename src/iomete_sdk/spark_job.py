@@ -75,8 +75,8 @@ class SparkJobApiClient:
     def get_job_runs(self, job_id: str):
         return self._call_api(method="GET", url=f"{self.spark_job_endpoint}/{job_id}/runs")
 
-    def submit_job_run(self, job_id: str):
-        return self._call_api(method="POST", url=f"{self.spark_job_endpoint}/{job_id}/runs")
+    def submit_job_run(self, job_id: str, payload: dict):
+        return self._call_api(method="POST", url=f"{self.spark_job_endpoint}/{job_id}/runs", payload=payload)
 
     def cancel_job_run(self, job_id: str, run_id: str):
         return self._call_api(method="DELETE", url=f"{self.spark_job_endpoint}/{job_id}/runs/{run_id}")

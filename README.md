@@ -71,7 +71,7 @@ response = job_client.delete_job(job_id=job_id)
 
 Submit job run:
 ```python
-response = job_client.submit_job_run(job_id=job_id)
+response = job_client.submit_job_run(job_id=job_id, payload={})
 ```
 
 Cancel job run:
