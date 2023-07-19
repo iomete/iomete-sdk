@@ -4,7 +4,8 @@ import uuid
 
 import pytest as pytest
 
-from iomete_sdk import SparkJobApiClient, ClientError
+from iomete_sdk.spark import SparkJobApiClient
+from iomete_sdk.api_utils import ClientError
 
 TEST_TOKEN = os.environ.get("TEST_TOKEN")
 WORKSPACE_ID = "pceh7-816"

@@ -26,7 +26,8 @@ setup(
         'dev': ['pytest']
     },
     install_requires=[
-        "requests==2.28.2"
+        "requests==2.28.2",
+        "dataclasses-json==0.5.12",
     ],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
