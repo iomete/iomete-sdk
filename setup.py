@@ -2,7 +2,7 @@ import os
 from distutils.core import setup
 
 package_name = "iomete_sdk"
-package_version = "1.0.1"
+package_version = "1.1.0"
 
 description = """IOMETE SDK for Python."""
 
@@ -21,7 +21,7 @@ setup(
     author='IOMETE',
     author_email='vusal@iomete.com',
     url='https://github.com/iomete/iomete-sdk',
-    keywords=['iomete', 'sdk', 'spark-job'],
+    keywords=['iomete', 'sdk', 'spark-job', 'data-security-api'],
     extras_require={
         'dev': ['pytest']
     },

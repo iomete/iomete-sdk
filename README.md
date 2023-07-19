@@ -17,15 +17,16 @@ pip install iomete-sdk
 
 Import and initialize the client:
 ```python
-from iomete_sdk import SparkJobApiClient, ClientError
+from iomete_sdk.spark import SparkJobApiClient
+from iomete_sdk.api_utils import ClientError
 
 WORKSPACE_ID = "<YOUR_WORKSPACE_ID>"
 API_KEY = "<YOU_IOMETE_API_KEY>"
 
 job_client = SparkJobApiClient(
-        workspace_id=WORKSPACE_ID,
-        api_key=API_KEY,
-    )
+    workspace_id=WORKSPACE_ID,
+    api_key=API_KEY,
+)
 ```
 
 Create a new job:
