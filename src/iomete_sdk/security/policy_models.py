@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional, List, Dict
+from typing import Optional, List
 
-from dataclasses_json import dataclass_json, LetterCase
+from dataclasses_json import dataclass_json
 
 
 class ResourceInclusionType(str, Enum):
@@ -63,9 +63,9 @@ class AccessPolicyResource:
 @dataclass_json
 @dataclass
 class AccessPolicyItem:
-    users: List[str] = None
-    groups: List[str] = None
-    roles: List[str] = None
+    users: Optional[List[str]] = None
+    groups: Optional[List[str]] = None
+    roles: Optional[List[str]] = None
     accesses: List[AccessType] = None
 
 
@@ -81,10 +81,10 @@ class AccessPolicyView:
     priority: PolicyPriority = PolicyPriority.NORMAL
 
     resources: List[AccessPolicyResource] = None
-    allow_policy_items: List[AccessPolicyItem] = None
-    allow_exceptions: List[AccessPolicyItem] = None
-    deny_policy_items: List[AccessPolicyItem] = None
-    deny_exceptions: List[AccessPolicyItem] = None
+    allow_policy_items: Optional[List[AccessPolicyItem]] = None
+    allow_exceptions: Optional[List[AccessPolicyItem]] = None
+    deny_policy_items: Optional[List[AccessPolicyItem]] = None
+    deny_exceptions: Optional[List[AccessPolicyItem]] = None
 
 
 @dataclass_json
@@ -100,9 +100,9 @@ class DataMaskPolicyResource:
 class DataMaskPolicyItem:
     data_mask_type: str = None,
     data_mask_custom_expr: Optional[str] = None
-    users: List[str] = None
-    groups: List[str] = None
-    roles: List[str] = None
+    users: Optional[List[str]] = None
+    groups: Optional[List[str]] = None
+    roles: Optional[List[str]] = None
 
 
 @dataclass_json
@@ -124,9 +124,9 @@ class DataMaskPolicyView:
 @dataclass
 class RowFilterPolicyItem:
     filter_expr: str = None
-    users: List[str] = None
-    groups: List[str] = None
-    roles: List[str] = None
+    users: Optional[List[str]] = None
+    groups: Optional[List[str]] = None
+    roles: Optional[List[str]] = None
 
 
 @dataclass_json

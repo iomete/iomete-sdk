@@ -29,7 +29,7 @@ class DataSecurityApiClient:
 
     def _get_controller_host(self):
         result = self.api_utils.call(
-            method="GET", url=f"https://account.iomete.com/api/v1/workspaces/{self.workspace_id}/info")
+            method="GET", url=f"https://devaccount.iomete.com/api/v1/workspaces/{self.workspace_id}/info")
         return result["controller_endpoint"]
 
     def create_access_policy(self, policy: AccessPolicyView) -> AccessPolicyView:
