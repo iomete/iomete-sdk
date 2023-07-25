@@ -37,41 +37,41 @@ class DataSecurityApiClient:
                                    url=f"{self.data_security_endpoint}/access/policy",
                                    payload=policy.to_dict())
 
-        return AccessPolicyView(**data)
+        return AccessPolicyView.from_dict(data)
 
     def get_access_policies(self) -> List[AccessPolicyView]:
         data = self.api_utils.call(method="GET",
                                    url=f"{self.data_security_endpoint}/access/policy")
 
-        return [AccessPolicyView(**policy) for policy in data]
+        return [AccessPolicyView.from_dict(policy) for policy in data]
 
     def get_access_policy_by_name(self, policy_name: str) -> AccessPolicyView:
         data = self.api_utils.call(method="GET",
                                    url=f"{self.data_security_endpoint}/access/policy/name/{policy_name}")
 
-        return AccessPolicyView(**data)
+        return AccessPolicyView.from_dict(data)
 
-    def get_access_policy_by_id(self, policy_id: str) -> AccessPolicyView:
+    def get_access_policy_by_id(self, policy_id: int) -> AccessPolicyView:
         data = self.api_utils.call(method="GET",
                                    url=f"{self.data_security_endpoint}/access/policy/{policy_id}")
 
-        return AccessPolicyView(**data)
+        return AccessPolicyView.from_dict(data)
 
     def update_access_policy_by_name(self, policy_name: str, policy: AccessPolicyView) -> AccessPolicyView:
         data = self.api_utils.call(method="PUT",
                                    url=f"{self.data_security_endpoint}/access/policy/name/{policy_name}",
                                    payload=policy.to_dict())
 
-        return AccessPolicyView(**data)
+        return AccessPolicyView.from_dict(data)
 
-    def update_access_policy_by_id(self, policy_id: str, policy: AccessPolicyView) -> AccessPolicyView:
+    def update_access_policy_by_id(self, policy_id: int, policy: AccessPolicyView) -> AccessPolicyView:
         data = self.api_utils.call(method="PUT",
                                    url=f"{self.data_security_endpoint}/access/policy/{policy_id}",
                                    payload=policy.to_dict())
 
-        return AccessPolicyView(**data)
+        return AccessPolicyView.from_dict(data)
 
-    def delete_access_policy_by_id(self, policy_id: str):
+    def delete_access_policy_by_id(self, policy_id: int):
         self.api_utils.call(method="DELETE",
                             url=f"{self.data_security_endpoint}/access/policy/{policy_id}")
 
@@ -80,41 +80,41 @@ class DataSecurityApiClient:
                                    url=f"{self.data_security_endpoint}/filter/policy",
                                    payload=policy.to_dict())
 
-        return RowFilterPolicyView(**data)
+        return RowFilterPolicyView.from_dict(data)
 
     def get_filter_policies(self) -> List[RowFilterPolicyView]:
         data = self.api_utils.call(method="GET",
                                    url=f"{self.data_security_endpoint}/filter/policy")
 
-        return [RowFilterPolicyView(**policy) for policy in data]
+        return [RowFilterPolicyView.from_dict(policy) for policy in data]
 
     def get_filter_policy_by_name(self, policy_name: str) -> RowFilterPolicyView:
         data = self.api_utils.call(method="GET",
                                    url=f"{self.data_security_endpoint}/filter/policy/name/{policy_name}")
 
-        return RowFilterPolicyView(**data)
+        return RowFilterPolicyView.from_dict(data)
 
-    def get_filter_policy_by_id(self, policy_id: str) -> RowFilterPolicyView:
+    def get_filter_policy_by_id(self, policy_id: int) -> RowFilterPolicyView:
         data = self.api_utils.call(method="GET",
                                    url=f"{self.data_security_endpoint}/filter/policy/{policy_id}")
 
-        return RowFilterPolicyView(**data)
+        return RowFilterPolicyView.from_dict(data)
 
     def update_filter_policy_by_name(self, policy_name: str, policy: RowFilterPolicyView) -> RowFilterPolicyView:
         data = self.api_utils.call(method="PUT",
                                    url=f"{self.data_security_endpoint}/filter/policy/name/{policy_name}",
                                    payload=policy.to_dict())
 
-        return RowFilterPolicyView(**data)
+        return RowFilterPolicyView.from_dict(data)
 
-    def update_filter_policy_by_id(self, policy_id: str, policy: RowFilterPolicyView) -> RowFilterPolicyView:
+    def update_filter_policy_by_id(self, policy_id: int, policy: RowFilterPolicyView) -> RowFilterPolicyView:
         data = self.api_utils.call(method="PUT",
                                    url=f"{self.data_security_endpoint}/filter/policy/{policy_id}",
                                    payload=policy.to_dict())
 
-        return RowFilterPolicyView(**data)
+        return RowFilterPolicyView.from_dict(data)
 
-    def delete_filter_policy_by_id(self, policy_id: str):
+    def delete_filter_policy_by_id(self, policy_id: int):
         self.api_utils.call(method="DELETE",
                             url=f"{self.data_security_endpoint}/filter/policy/{policy_id}")
 
@@ -123,40 +123,40 @@ class DataSecurityApiClient:
                                    url=f"{self.data_security_endpoint}/mask/policy",
                                    payload=policy.to_dict())
 
-        return DataMaskPolicyView(**data)
+        return DataMaskPolicyView.from_dict(data)
 
     def get_masking_policies(self) -> List[DataMaskPolicyView]:
         data = self.api_utils.call(method="GET",
                                    url=f"{self.data_security_endpoint}/mask/policy")
 
-        return [DataMaskPolicyView(**policy) for policy in data]
+        return [DataMaskPolicyView.from_dict(policy) for policy in data]
 
     def get_masking_policy_by_name(self, policy_name: str) -> DataMaskPolicyView:
         data = self.api_utils.call(method="GET",
                                    url=f"{self.data_security_endpoint}/mask/policy/name/{policy_name}")
 
-        return DataMaskPolicyView(**data)
+        return DataMaskPolicyView.from_dict(data)
 
-    def get_masking_policy_by_id(self, policy_id: str) -> DataMaskPolicyView:
+    def get_masking_policy_by_id(self, policy_id: int) -> DataMaskPolicyView:
         data = self.api_utils.call(method="GET",
                                    url=f"{self.data_security_endpoint}/mask/policy/{policy_id}")
 
-        return DataMaskPolicyView(**data)
+        return DataMaskPolicyView.from_dict(data)
 
     def update_masking_policy_by_name(self, policy_name: str, policy: DataMaskPolicyView) -> DataMaskPolicyView:
         data = self.api_utils.call(method="PUT",
                                    url=f"{self.data_security_endpoint}/mask/policy/name/{policy_name}",
                                    payload=policy.to_dict())
 
-        return DataMaskPolicyView(**data)
+        return DataMaskPolicyView.from_dict(data)
 
-    def update_masking_policy_by_id(self, policy_id: str, policy: DataMaskPolicyView) -> DataMaskPolicyView:
+    def update_masking_policy_by_id(self, policy_id: int, policy: DataMaskPolicyView) -> DataMaskPolicyView:
         data = self.api_utils.call(method="PUT",
                                    url=f"{self.data_security_endpoint}/mask/policy/{policy_id}",
                                    payload=policy.to_dict())
 
-        return DataMaskPolicyView(**data)
+        return DataMaskPolicyView.from_dict(data)
 
-    def delete_masking_policy_by_id(self, policy_id: str):
+    def delete_masking_policy_by_id(self, policy_id: int):
         self.api_utils.call(method="DELETE",
                             url=f"{self.data_security_endpoint}/mask/policy/{policy_id}")
