@@ -7,8 +7,8 @@ from iomete_sdk.security.policy_models import AccessPolicyView, DataMaskPolicyVi
     RowFilterPolicyResource, ValidityPeriod, ResourceInclusionType
 
 # Replace with your own token and workspace id
-TEST_TOKEN = "FdVawCi9GZW0P8sWuWdx0Xl0r6rLVpqEiX2LB7KLB/I="
-WORKSPACE_ID = "pw9if-p22"
+TEST_TOKEN = "YOUR_TOKEN_HERE"
+WORKSPACE_ID = "YOUR_WORKSPACE_ID_HERE"
 
 
 class TestDataSecurityApiClient(unittest.TestCase):
