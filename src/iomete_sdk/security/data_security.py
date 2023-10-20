@@ -5,32 +5,24 @@ from typing import List
 from iomete_sdk.api_utils import ClientError, APIUtils
 from iomete_sdk.security.policy_models import AccessPolicyView, RowFilterPolicyView, DataMaskPolicyView
 
-DATA_SECURITY_ENDPOINT = "/api/v1/workspaces/{workspace_id}/data-security"
+DATA_SECURITY_ENDPOINT = "/api/v1/data-security"
 
 
 @dataclass
 class DataSecurityApiClient:
     logger = logging.getLogger('DataSecurityApiClient')
 
-    workspace_id: str
+    host: str
     api_key: str
-    base_url: str = None
+
     data_security_endpoint: str = None
     api_utils: APIUtils = None
 
     def __post_init__(self):
         self.api_utils = APIUtils(self.api_key)
 
-        controller_host = self._get_controller_host()
-        self.logger.debug(f"Controller host: {controller_host}")
-
-        self.base_url = f"https://{self._get_controller_host()}"
-        self.data_security_endpoint = self.base_url + DATA_SECURITY_ENDPOINT.format(workspace_id=self.workspace_id)
-
-    def _get_controller_host(self):
-        result = self.api_utils.call(
-            method="GET", url=f"https://account.iomete.com/api/v1/workspaces/{self.workspace_id}/info")
-        return result["controller_endpoint"]
+        self.logger.debug(f"Host: {self.host}")
+        self.data_security_endpoint = self.host + DATA_SECURITY_ENDPOINT
 
     def create_access_policy(self, policy: AccessPolicyView) -> AccessPolicyView:
         data = self.api_utils.call(method="POST",

@@ -20,11 +20,11 @@ Import and initialize the client:
 from iomete_sdk.spark import SparkJobApiClient
 from iomete_sdk.api_utils import ClientError
 
-WORKSPACE_ID = "<YOUR_WORKSPACE_ID>"
+HOST = "<YOUR_DATAPLANE_HOST>" # https://dataplane-endpoint.example.com
 API_KEY = "<YOU_IOMETE_API_KEY>"
 
 job_client = SparkJobApiClient(
-    workspace_id=WORKSPACE_ID,
+    host=HOST,
     api_key=API_KEY,
 )
 ```

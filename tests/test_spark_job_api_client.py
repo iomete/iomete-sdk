@@ -8,7 +8,7 @@ from iomete_sdk.spark import SparkJobApiClient
 from iomete_sdk.api_utils import ClientError
 
 TEST_TOKEN = os.environ.get("TEST_TOKEN")
-WORKSPACE_ID = "pceh7-816"
+HOST = "YOUR_DATAPLANE_HOST_HERE"  # https://dataplane-endpoint.example.com
 
 SPARK_VERSION = "3.2.1"
 
@@ -33,7 +33,7 @@ def create_payload() -> dict:
 @pytest.fixture
 def job_client():
     return SparkJobApiClient(
-        workspace_id=WORKSPACE_ID,
+        host=HOST,
         api_key=TEST_TOKEN,
     )
 
@@ -53,7 +53,6 @@ def test_create_job_successful(job_client, create_payload):
     response = job_client.create_job(payload=create_payload)
 
     assert response["name"] == create_payload["name"]
-    assert response["workspace_id"] == WORKSPACE_ID
     assert response["id"] is not None
 
     # clean up
@@ -74,7 +73,6 @@ def test_update_job(job_client, create_payload):
     assert job_update_response["schedule"] == cron_schedule
     assert job_update_response["job_type"] == "SCHEDULED"
     assert job_update_response["name"] == job_create_response["name"]
-    assert job_update_response["workspace_id"] == job_create_response["workspace_id"]
     assert job_update_response["id"] == job_create_response["id"]
 
     # clean up
@@ -87,7 +85,6 @@ def test_get_jobs(job_client):
     assert len(response["items"]) > 0
 
     job = response["items"][0]
-    assert job["workspace_id"] == WORKSPACE_ID
     assert job["id"] is not None
 
 
@@ -102,7 +99,6 @@ def test_get_job_by_id(job_client, create_payload):
     assert response["permissions"] is not None
 
     job = response["item"]
-    assert job["workspace_id"] == WORKSPACE_ID
     assert job["name"] == create_payload["name"]
     assert job["id"] is not None
 

@@ -6,15 +6,15 @@ from iomete_sdk.security.policy_models import AccessPolicyView, DataMaskPolicyVi
     DataMaskPolicyItem, RowFilterPolicyItem, AccessPolicyResource, AccessType, AccessPolicyItem, DataMaskPolicyResource, \
     RowFilterPolicyResource, ValidityPeriod, ResourceInclusionType
 
-# Replace with your own token and workspace id
+# Replace with your own token and host
 TEST_TOKEN = "YOUR_TOKEN_HERE"
-WORKSPACE_ID = "YOUR_WORKSPACE_ID_HERE"
+HOST = "YOUR_DATAPLANE_HOST_HERE"  # https://dataplane-endpoint.example.com
 
 
 class TestDataSecurityApiClient(unittest.TestCase):
     def setUp(self):
         self.client = DataSecurityApiClient(
-            workspace_id=WORKSPACE_ID,
+            host=HOST,
             api_key=TEST_TOKEN,
         )
 
