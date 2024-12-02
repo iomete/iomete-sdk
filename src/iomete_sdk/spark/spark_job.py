@@ -49,8 +49,8 @@ class SparkJobApiClient:
     def get_job_run_by_id(self, job_id: str, run_id: str):
         return self.api_utils.call(method="GET", url=f"{self.spark_job_endpoint}/{job_id}/runs/{run_id}")
 
-    def get_job_run_logs(self, job_id: str, run_id: str):
-        return self.api_utils.call(method="GET", url=f"{self.spark_job_endpoint}/{job_id}/runs/{run_id}/logs")
+    def get_job_run_logs(self, job_id: str, run_id: str, time_range: str = "5m"):
+        return self.api_utils.call(method="GET", url=f"{self.spark_job_endpoint}/{job_id}/runs/{run_id}/logs?range={time_range}")
 
     def get_job_run_metrics(self, job_id: str, run_id: str):
         return self.api_utils.call(method="GET", url=f"{self.spark_job_endpoint}/{job_id}/runs/{run_id}/metrics")

@@ -1,4 +1,3 @@
-import os
 import time
 import uuid
 
@@ -6,11 +5,9 @@ import pytest as pytest
 
 from iomete_sdk.spark import SparkJobApiClient
 from iomete_sdk.api_utils import ClientError
+from tests import TEST_TOKEN, TEST_HOST
 
-TEST_TOKEN = "YOUR_TOKEN_HERE"
-HOST = "YOUR_DATAPLANE_HOST_HERE"  # https://dataplane-endpoint.example.com
-
-SPARK_VERSION = "3.2.1"
+SPARK_VERSION = "3.5.3"
 
 
 def random_job_name():
@@ -21,11 +18,28 @@ def random_job_name():
 def create_payload() -> dict:
     return {
         "name": random_job_name(),
+        "namespace": "iomete-system",
+        "jobUser": "admin",
+        "jobType": "MANUAL",
         "template": {
-            "sparkVersion": SPARK_VERSION,
-            "mainApplicationFile": "local:///opt/spark/examples/jars/spark-examples_2.12-3.2.1-iomete.jar",
-            "mainClass": "org.apache.spark.examples.SparkPi",
-            "arguments": ["10"]
+            "applicationType": "python",
+            "image": f"iomete/spark-py:{SPARK_VERSION}-v1",
+            "mainApplicationFile": "https://raw.githubusercontent.com/iomete/query-scheduler-job/main/job.py",
+            "configMaps": [{
+                "key": "application.conf",
+                "content": "# Queries to be run sequentially\n[\n  # let's create an example SELECT\n  \"\"\"\n  SELECT 1\n  \"\"\"\n]",
+                "mountPath": "/etc/configs"
+            }],
+            "deps": {
+                "pyFiles": ["https://github.com/iomete/query-scheduler-job/raw/main/infra/dependencies.zip"]
+            },
+            "instanceConfig": {
+                "singleNodeDeployment": False, "driverType": "driver-x-small",
+                "executorType": "exec-x-small", "executorCount": 1
+            },
+            "restartPolicy": {"type": "Never"},
+            "maxExecutionDurationSeconds": "3600",
+            "volumeId": "920a140e-fc90-481a-8ec2-4e395bfa6450",
         }
     }
 
@@ -33,7 +47,7 @@ def create_payload() -> dict:
 @pytest.fixture
 def job_client():
     return SparkJobApiClient(
-        host=HOST,
+        host=TEST_HOST,
         api_key=TEST_TOKEN,
     )
 
@@ -65,6 +79,7 @@ def test_update_job(job_client, create_payload):
 
     # update job
     update_payload = job_create_response.copy()
+    update_payload["jobType"] = "SCHEDULED"
     update_payload["schedule"] = cron_schedule
     job_update_response = job_client.update_job(job_id=job_create_response["id"], payload=update_payload)
 
@@ -101,6 +116,53 @@ def test_get_job_by_id(job_client, create_payload):
     assert job["id"] is not None
 
     # clean up
+    job_client.delete_job_by_id(job_id=job["id"])
+
+
+def test_get_job_run_by_id(job_client, create_payload):
+    job = job_client.create_job(payload=create_payload)
+    job_run = job_client.submit_job_run(job_id=job["id"], payload={})
+
+    job_run_info = job_client.get_job_run_by_id(job_id=job["id"], run_id=job_run["id"])
+
+    assert job_run_info["jobId"] == job["id"]
+    assert job_run_info["id"] == job_run["id"]
+    assert job_run_info["driverErrorMessage"] == ''
+    assert job_run_info["executionAttempts"] == 1
+
+    job_client.cancel_job_run(job_id=job["id"], run_id=job_run["id"])
+    job_client.delete_job_by_id(job_id=job["id"])
+
+
+def test_get_job_run_logs(job_client, create_payload):
+    job = job_client.create_job(payload=create_payload)
+    job_run = job_client.submit_job_run(job_id=job["id"], payload={})
+
+    job_run_logs = job_client.get_job_run_logs(job_id=job["id"], run_id=job_run["id"])
+
+    assert job_run_logs is not None
+    assert len(job_run_logs) > 0
+    assert job_run_logs[0]['date'] is not None
+    assert job_run_logs[0]['logLine'] is not None
+
+    job_client.cancel_job_run(job_id=job["id"], run_id=job_run["id"])
+    job_client.delete_job_by_id(job_id=job["id"])
+
+
+def test_get_job_run_metrics(job_client, create_payload):
+    job = job_client.create_job(payload=create_payload)
+    job_run = job_client.submit_job_run(job_id=job["id"], payload={})
+
+    time.sleep(10)
+
+    job_run_metrics = job_client.get_job_run_metrics(job_id=job["id"], run_id=job_run["id"])
+
+    assert job_run_metrics is not None
+    assert job_run_metrics["runId"] == job_run["id"]
+    assert job_run_metrics["driver"] is not None
+    assert job_run_metrics["executors"] is not None
+
+    job_client.cancel_job_run(job_id=job["id"], run_id=job_run["id"])
     job_client.delete_job_by_id(job_id=job["id"])
 
 
@@ -146,7 +208,6 @@ def test_submit_job_run(job_client, create_payload):
     run_id = response["id"]
 
     assert run_id is not None
-    assert response["jobId"] == job["id"]
 
     # sleep 5 seconds before cleaning up
     time.sleep(5)

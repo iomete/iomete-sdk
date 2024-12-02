@@ -9,8 +9,10 @@ source .env/bin/activate
 pip install -e ."[dev]"
 ```
 
-**Run test**
+**Run Test Suit**
 
-```shell
-pytest
-```
+- Update configs in `tests/__init__.py`
+- Run all the tests
+  ```shell
+  pytest
+  ```

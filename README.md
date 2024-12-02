@@ -11,11 +11,9 @@ Install the package with:
 pip install iomete-sdk
 ```
 
-## Usage
+## Usage - Spark Job API
 
-### Spark Job API
-
-Import and initialize the client:
+### Import and initialize the client
 ```python
 from iomete_sdk.spark import SparkJobApiClient
 from iomete_sdk.api_utils import ClientError
@@ -29,73 +27,86 @@ job_client = SparkJobApiClient(
 )
 ```
 
-Create a new job:
+### Create a new job
 ```python
 response = job_client.create_job(payload={
         "name": "job-name",
+        "namespace": "k8s-namespace",
+        "jobUser": "job-user",
+        "jobType": "MANUAL/SCHEDULED/STREAMING",
         "template": {
-            "main_application_file": "local:///opt/spark/examples/jars/spark-examples_2.12-3.2.1-iomete.jar",
-            "main_class": "org.apache.spark.examples.SparkPi",
-            "arguments": ["10"]
+            "applicationType": "python",
+            "image": f"iomete/spark-py:3.5.3-v1",
+            "mainApplicationFile": "path/to/job.py",
+            "configMaps": [{
+                "key": "application.conf",
+                "content": "[SELECT 1]",
+                "mountPath": "/etc/configs"
+            }],
+            "deps": {
+                "pyFiles": ["path/to/dependencies.zip"]
+            },
+            "instanceConfig": {
+                "singleNodeDeployment": False, "driverType": "driver-x-small",
+                "executorType": "exec-x-small", "executorCount": 1
+            },
+            "restartPolicy": {"type": "Never"},
+            "maxExecutionDurationSeconds": "max-execution-duration",
+            "volumeId": "volume-id",
         }
     })
 
 job_id = response["id"]
 ```
 
-Get jobs:
+### Get jobs
 ```python
 response = job_client.get_jobs()
 ```
 
-Get job:
+### Get job
 ```python
 response = job_client.get_job(job_id=job_id)
 ```
 
-Update job:
+### Update job
 ```python
-response = job_client.update_job(job_id=job_id, payload={
-        "template": {
-            "main_application_file": "local:///opt/spark/examples/jars/spark-examples_2.12-3.2.1-iomete.jar",
-            "main_class": "org.apache.spark.examples.SparkPi",
-            "arguments": ["10"]
-        }
-    })
+response = job_client.update_job(job_id=job_id, payload=updated_payload)
 ```
 
-Delete job:
+### Delete job
 ```python
 response = job_client.delete_job(job_id=job_id)
 ```
 
 
-Submit job run:
+### Submit job run
 ```python
 response = job_client.submit_job_run(job_id=job_id, payload={})
 ```
 
-Cancel job run:
+### Cancel job run
 ```python
 response = job_client.cancel_job_run(job_id=job_id, run_id=run_id)
 ```
 
-Get Job Runs:
+### Get Job Runs
 ```python
 response = job_client.get_job_runs(job_id=job_id)
 ```
 
-Get Job Run:
+### Get Job Run
 ```python
 response = job_client.get_job_run(job_id=job_id, run_id=run_id)
 ```
 
-Get Job Run Logs:
+### Get Job Run Logs
 ```python
-response = job_client.get_job_run_logs(job_id=job_id, run_id=run_id)
+response = job_client.get_job_run_logs(job_id=job_id, run_id=run_id, time_range="5m")
 ```
+**Supported Time Range:** 5m, 15m, 30m, 1h, 3h, 6h, 12h, 24h, 2d, 7d, 14d, 30d 
 
-Get Job Run Metrics:
+### Get Job Run Metrics
 ```python
 response = job_client.get_job_run_metrics(job_id=job_id, run_id=run_id)
 ```

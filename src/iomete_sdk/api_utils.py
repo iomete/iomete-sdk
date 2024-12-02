@@ -1,6 +1,7 @@
 import json
 import logging
 from dataclasses import dataclass
+from json import JSONDecodeError
 
 import requests
 
@@ -43,7 +44,12 @@ class APIUtils:
             self.logger.error(f"HTTP Error: {e}")
             self.logger.info(f"Response content: {response.content}")
 
-            json_content = json.loads(response.content)
+            try:
+                json_content = json.loads(response.content)
+            except JSONDecodeError as e:
+                self.logger.error(f"JSON Parsing Exception: {e}")
+                raise ClientError(status=response.status_code, content={})
+
             raise ClientError(status=response.status_code, content=json_content)
         except requests.exceptions.RequestException as e:
             self.logger.error(f"Request Exception: {e}")
