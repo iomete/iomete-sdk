@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Optional, List
 
-from dataclasses_json import dataclass_json
+from dataclasses_json import dataclass_json, LetterCase
 
 
 class ResourceInclusionType(str, Enum):
@@ -38,7 +38,7 @@ class DataMaskType(str, Enum):
     CUSTOM = "CUSTOM"
 
 
-@dataclass_json
+@dataclass_json(letter_case=LetterCase.CAMEL)
 @dataclass
 class ValidityPeriod:
     # format: yyyy/MM/dd HH:mm:ss
@@ -49,18 +49,18 @@ class ValidityPeriod:
     time_zone: str = "Universal"
 
 
-@dataclass_json
+@dataclass_json(letter_case=LetterCase.CAMEL)
 @dataclass
 class AccessPolicyResource:
     databases: List[str] = None
-    database_inclusion_type: ResourceInclusionType = ResourceInclusionType.INCLUDE
+    databases_inclusion_type: ResourceInclusionType = ResourceInclusionType.INCLUDE
     tables: List[str] = None
-    table_inclusion_type: ResourceInclusionType = ResourceInclusionType.INCLUDE
+    tables_inclusion_type: ResourceInclusionType = ResourceInclusionType.INCLUDE
     columns: List[str] = None
-    column_inclusion_type: ResourceInclusionType = ResourceInclusionType.INCLUDE
+    columns_inclusion_type: ResourceInclusionType = ResourceInclusionType.INCLUDE
 
 
-@dataclass_json
+@dataclass_json(letter_case=LetterCase.CAMEL)
 @dataclass
 class AccessPolicyItem:
     users: Optional[List[str]] = None
@@ -69,7 +69,7 @@ class AccessPolicyItem:
     accesses: List[AccessType] = None
 
 
-@dataclass_json
+@dataclass_json(letter_case=LetterCase.CAMEL)
 @dataclass
 class AccessPolicyView:
     id: Optional[int] = None
@@ -87,7 +87,7 @@ class AccessPolicyView:
     deny_exceptions: Optional[List[AccessPolicyItem]] = None
 
 
-@dataclass_json
+@dataclass_json(letter_case=LetterCase.CAMEL)
 @dataclass
 class DataMaskPolicyResource:
     database: str = None
@@ -95,7 +95,7 @@ class DataMaskPolicyResource:
     column: str = None
 
 
-@dataclass_json
+@dataclass_json(letter_case=LetterCase.CAMEL)
 @dataclass
 class DataMaskPolicyItem:
     data_mask_type: str = None,
@@ -105,7 +105,7 @@ class DataMaskPolicyItem:
     roles: Optional[List[str]] = None
 
 
-@dataclass_json
+@dataclass_json(letter_case=LetterCase.CAMEL)
 @dataclass
 class DataMaskPolicyView:
     id: Optional[int] = None
@@ -120,7 +120,7 @@ class DataMaskPolicyView:
     data_mask_policy_items: List[DataMaskPolicyItem] = None
 
 
-@dataclass_json
+@dataclass_json(letter_case=LetterCase.CAMEL)
 @dataclass
 class RowFilterPolicyItem:
     filter_expr: str = None
@@ -129,14 +129,14 @@ class RowFilterPolicyItem:
     roles: Optional[List[str]] = None
 
 
-@dataclass_json
+@dataclass_json(letter_case=LetterCase.CAMEL)
 @dataclass
 class RowFilterPolicyResource:
     database: str = None
     table: str = None
 
 
-@dataclass_json
+@dataclass_json(letter_case=LetterCase.CAMEL)
 @dataclass
 class RowFilterPolicyView:
     id: Optional[int] = None

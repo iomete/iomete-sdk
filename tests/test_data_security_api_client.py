@@ -6,15 +6,15 @@ from iomete_sdk.security.policy_models import AccessPolicyView, DataMaskPolicyVi
     DataMaskPolicyItem, RowFilterPolicyItem, AccessPolicyResource, AccessType, AccessPolicyItem, DataMaskPolicyResource, \
     RowFilterPolicyResource, ValidityPeriod, ResourceInclusionType
 
-# Replace with your own token and workspace id
+# Replace with your own token and host
 TEST_TOKEN = "YOUR_TOKEN_HERE"
-WORKSPACE_ID = "YOUR_WORKSPACE_ID_HERE"
+HOST = "YOUR_DATAPLANE_HOST_HERE"  # https://dataplane-endpoint.example.com
 
 
 class TestDataSecurityApiClient(unittest.TestCase):
     def setUp(self):
         self.client = DataSecurityApiClient(
-            workspace_id=WORKSPACE_ID,
+            host=HOST,
             api_key=TEST_TOKEN,
         )
 
@@ -34,7 +34,7 @@ class TestDataSecurityApiClient(unittest.TestCase):
             allow_policy_items=[
                 AccessPolicyItem(
                     accesses=[AccessType.SELECT, AccessType.UPDATE],
-                    users=['fuad@iomete.com'])
+                    users=['{USER}'])
             ]
         )
         created_policy = self.client.create_access_policy(new_policy)
@@ -76,7 +76,7 @@ class TestDataSecurityApiClient(unittest.TestCase):
             data_mask_policy_items=[
                 DataMaskPolicyItem(
                     data_mask_type="MASK_SHOW_LAST_4",
-                    users=["fuad@iomete.com"]
+                    users=["{USER}"]
                 )]
         )
         created_policy = self.client.create_masking_policy(new_policy)
@@ -117,7 +117,7 @@ class TestDataSecurityApiClient(unittest.TestCase):
             row_filter_policy_items=[
                 RowFilterPolicyItem(
                     filter_expr="1 == 1",
-                    users=["fuad@iomete.com"],
+                    users=["{USER}"],
                 )]
         )
         created_policy = self.client.create_filter_policy(new_policy)
@@ -166,13 +166,13 @@ class TestDataSecurityApiClient(unittest.TestCase):
                     databases=["test_db"],
                     tables=["test_tbl"],
                     columns=["test_col"],
-                    column_inclusion_type=ResourceInclusionType.EXCLUDE
+                    columns_inclusion_type=ResourceInclusionType.EXCLUDE
                 )
             ],
             allow_policy_items=[
                 AccessPolicyItem(
                     accesses=[AccessType.SELECT, AccessType.UPDATE],
-                    users=['fuad@iomete.com', 'vusal@iomete.com'])
+                    users=["{USER}", "{OWNER}"])
             ]
         )
         created_policy = self.client.create_access_policy(new_policy)
@@ -185,7 +185,7 @@ class TestDataSecurityApiClient(unittest.TestCase):
 
         # Verify the policy has multiple users
         self.assertEqual(len(existing_policy.allow_policy_items[0].users), 2)
-        self.assertEqual(existing_policy.resources[0].column_inclusion_type, ResourceInclusionType.EXCLUDE)
+        self.assertEqual(existing_policy.resources[0].columns_inclusion_type, ResourceInclusionType.EXCLUDE)
 
         # Delete the policy
         self.client.delete_access_policy_by_id(existing_policy.id)
@@ -206,7 +206,7 @@ class TestDataSecurityApiClient(unittest.TestCase):
             data_mask_policy_items=[
                 DataMaskPolicyItem(
                     data_mask_type="INVALID_MASK_TYPE",
-                    users=["fuad@iomete.com"]
+                    users=["{USER}"]
                 )]
         )
         with self.assertRaises(ClientError):
@@ -227,7 +227,7 @@ class TestDataSecurityApiClient(unittest.TestCase):
             row_filter_policy_items=[
                 RowFilterPolicyItem(
                     filter_expr="(1 == 1) AND (2 > 1)",
-                    users=["fuad@iomete.com"],
+                    users=["{USER}"],
                 )]
         )
         created_policy = self.client.create_filter_policy(new_policy)
@@ -265,7 +265,7 @@ class TestDataSecurityApiClient(unittest.TestCase):
             allow_policy_items=[
                 AccessPolicyItem(
                     accesses=[AccessType.SELECT, AccessType.UPDATE],
-                    users=['fuad@iomete.com'])
+                    users=['{USER}'])
             ]
         )
         created_policy = self.client.create_access_policy(new_policy)
@@ -305,7 +305,7 @@ class TestDataSecurityApiClient(unittest.TestCase):
             allow_policy_items=[
                 AccessPolicyItem(
                     accesses=[AccessType.SELECT, AccessType.UPDATE],
-                    users=['fuad@iomete.com'])
+                    users=['{USER}'])
             ]
         )
         with self.assertRaises(ClientError):

@@ -3,32 +3,24 @@ from dataclasses import dataclass
 
 from iomete_sdk.api_utils import APIUtils
 
-SPARK_JOB_ENDPOINT = "/api/v1/workspaces/{workspace_id}/spark-jobs"
+SPARK_JOB_ENDPOINT = "/api/v1/spark-jobs"
 
 
 @dataclass
 class SparkJobApiClient:
     logger = logging.getLogger('SparkJobApiClient')
 
-    workspace_id: str
+    host: str
     api_key: str
-    base_url: str = None
+
     spark_job_endpoint: str = None
     api_utils: APIUtils = None
 
     def __post_init__(self):
         self.api_utils = APIUtils(api_key=self.api_key)
 
-        controller_host = self._get_controller_host()
-        self.logger.debug(f"Controller host: {controller_host}")
-
-        self.base_url = f"https://{self._get_controller_host()}"
-        self.spark_job_endpoint = self.base_url + SPARK_JOB_ENDPOINT.format(workspace_id=self.workspace_id)
-
-    def _get_controller_host(self):
-        result = self.api_utils.call(
-            method="GET", url=f"https://account.iomete.com/api/v1/workspaces/{self.workspace_id}/info")
-        return result["controller_endpoint"]
+        self.logger.debug(f"Host: {self.host}")
+        self.spark_job_endpoint = self.host + SPARK_JOB_ENDPOINT
 
     def create_job(self, payload: dict):
         return self.api_utils.call(method="POST", url=self.spark_job_endpoint, payload=payload)
