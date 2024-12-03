@@ -2,7 +2,7 @@ import os
 from distutils.core import setup
 
 package_name = "iomete_sdk"
-package_version = "2.1.0"
+package_version = "2.1.1"
 
 description = """IOMETE SDK for Python."""
 
