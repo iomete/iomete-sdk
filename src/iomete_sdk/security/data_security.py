@@ -37,22 +37,9 @@ class DataSecurityApiClient:
 
         return [AccessPolicyView.from_dict(policy) for policy in data]
 
-    def get_access_policy_by_name(self, policy_name: str) -> AccessPolicyView:
-        data = self.api_utils.call(method="GET",
-                                   url=f"{self.data_security_endpoint}/access/policy/name/{policy_name}")
-
-        return AccessPolicyView.from_dict(data)
-
     def get_access_policy_by_id(self, policy_id: int) -> AccessPolicyView:
         data = self.api_utils.call(method="GET",
                                    url=f"{self.data_security_endpoint}/access/policy/{policy_id}")
-
-        return AccessPolicyView.from_dict(data)
-
-    def update_access_policy_by_name(self, policy_name: str, policy: AccessPolicyView) -> AccessPolicyView:
-        data = self.api_utils.call(method="PUT",
-                                   url=f"{self.data_security_endpoint}/access/policy/name/{policy_name}",
-                                   payload=policy.to_dict())
 
         return AccessPolicyView.from_dict(data)
 
@@ -80,22 +67,9 @@ class DataSecurityApiClient:
 
         return [RowFilterPolicyView.from_dict(policy) for policy in data]
 
-    def get_filter_policy_by_name(self, policy_name: str) -> RowFilterPolicyView:
-        data = self.api_utils.call(method="GET",
-                                   url=f"{self.data_security_endpoint}/filter/policy/name/{policy_name}")
-
-        return RowFilterPolicyView.from_dict(data)
-
     def get_filter_policy_by_id(self, policy_id: int) -> RowFilterPolicyView:
         data = self.api_utils.call(method="GET",
                                    url=f"{self.data_security_endpoint}/filter/policy/{policy_id}")
-
-        return RowFilterPolicyView.from_dict(data)
-
-    def update_filter_policy_by_name(self, policy_name: str, policy: RowFilterPolicyView) -> RowFilterPolicyView:
-        data = self.api_utils.call(method="PUT",
-                                   url=f"{self.data_security_endpoint}/filter/policy/name/{policy_name}",
-                                   payload=policy.to_dict())
 
         return RowFilterPolicyView.from_dict(data)
 
@@ -123,22 +97,9 @@ class DataSecurityApiClient:
 
         return [DataMaskPolicyView.from_dict(policy) for policy in data]
 
-    def get_masking_policy_by_name(self, policy_name: str) -> DataMaskPolicyView:
-        data = self.api_utils.call(method="GET",
-                                   url=f"{self.data_security_endpoint}/mask/policy/name/{policy_name}")
-
-        return DataMaskPolicyView.from_dict(data)
-
     def get_masking_policy_by_id(self, policy_id: int) -> DataMaskPolicyView:
         data = self.api_utils.call(method="GET",
                                    url=f"{self.data_security_endpoint}/mask/policy/{policy_id}")
-
-        return DataMaskPolicyView.from_dict(data)
-
-    def update_masking_policy_by_name(self, policy_name: str, policy: DataMaskPolicyView) -> DataMaskPolicyView:
-        data = self.api_utils.call(method="PUT",
-                                   url=f"{self.data_security_endpoint}/mask/policy/name/{policy_name}",
-                                   payload=policy.to_dict())
 
         return DataMaskPolicyView.from_dict(data)
 
