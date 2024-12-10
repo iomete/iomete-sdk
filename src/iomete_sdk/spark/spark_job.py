@@ -12,12 +12,13 @@ class SparkJobApiClient:
 
     host: str
     api_key: str
+    verify: bool = True
 
     spark_job_endpoint: str = None
     api_utils: APIUtils = None
 
     def __post_init__(self):
-        self.api_utils = APIUtils(api_key=self.api_key)
+        self.api_utils = APIUtils(api_key=self.api_key, verify=self.verify)
 
         self.logger.debug(f"Host: {self.host}")
         self.spark_job_endpoint = self.host + SPARK_JOB_ENDPOINT

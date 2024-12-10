@@ -18,8 +18,9 @@ class ClientError(Exception):
 class APIUtils:
     logger = logging.getLogger('APIUtils')
 
-    def __init__(self, api_key):
+    def __init__(self, api_key, verify: bool = True):
         self.api_key = api_key
+        self.verify = verify
 
     def call(self, method: str, url: str, payload: dict = None):
         headers = {
@@ -32,7 +33,8 @@ class APIUtils:
                 method=method,
                 url=url,
                 headers=headers,
-                json=payload
+                json=payload,
+                verify=self.verify
             )
             response.raise_for_status()
 
