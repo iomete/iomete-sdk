@@ -3,8 +3,6 @@ from dataclasses import dataclass
 
 from iomete_sdk.api_utils import APIUtils
 
-SPARK_JOB_ENDPOINT = "/api/v1/spark-jobs"
-
 
 @dataclass
 class SparkJobApiClient:
@@ -12,6 +10,7 @@ class SparkJobApiClient:
 
     host: str
     api_key: str
+    domain: str
     verify: bool = True
 
     spark_job_endpoint: str = None
@@ -21,7 +20,7 @@ class SparkJobApiClient:
         self.api_utils = APIUtils(api_key=self.api_key, verify=self.verify)
 
         self.logger.debug(f"Host: {self.host}")
-        self.spark_job_endpoint = self.host + SPARK_JOB_ENDPOINT
+        self.spark_job_endpoint = f"{self.host}/api/v1/domains/{self.domain}/spark/jobs"
 
     def create_job(self, payload: dict):
         return self.api_utils.call(method="POST", url=self.spark_job_endpoint, payload=payload)
@@ -51,7 +50,8 @@ class SparkJobApiClient:
         return self.api_utils.call(method="GET", url=f"{self.spark_job_endpoint}/{job_id}/runs/{run_id}")
 
     def get_job_run_logs(self, job_id: str, run_id: str, time_range: str = "5m"):
-        return self.api_utils.call(method="GET", url=f"{self.spark_job_endpoint}/{job_id}/runs/{run_id}/logs?range={time_range}")
+        return self.api_utils.call(method="GET",
+                                   url=f"{self.spark_job_endpoint}/{job_id}/runs/{run_id}/logs?range={time_range}")
 
     def get_job_run_metrics(self, job_id: str, run_id: str):
         return self.api_utils.call(method="GET", url=f"{self.spark_job_endpoint}/{job_id}/runs/{run_id}/metrics")

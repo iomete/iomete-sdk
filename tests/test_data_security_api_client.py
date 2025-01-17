@@ -6,7 +6,7 @@ from iomete_sdk.security import DataSecurityApiClient
 from iomete_sdk.security.policy_models import AccessPolicyView, DataMaskPolicyView, RowFilterPolicyView, \
     DataMaskPolicyItem, RowFilterPolicyItem, AccessPolicyResource, AccessType, AccessPolicyItem, DataMaskPolicyResource, \
     RowFilterPolicyResource, ValidityPeriod, ResourceInclusionType
-from tests import TEST_TOKEN, TEST_HOST
+from tests import TEST_TOKEN, TEST_HOST, TEST_DOMAIN
 
 
 class TestDataSecurityApiClient(unittest.TestCase):
@@ -14,6 +14,7 @@ class TestDataSecurityApiClient(unittest.TestCase):
         self.client = DataSecurityApiClient(
             host=TEST_HOST,
             api_key=TEST_TOKEN,
+            domain=TEST_DOMAIN
         )
         self.policy_suffix = f"iomete-sdk-{uuid.uuid4().hex}-"
 

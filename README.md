@@ -16,14 +16,15 @@ pip install iomete-sdk
 ### Import and initialize the client
 ```python
 from iomete_sdk.spark import SparkJobApiClient
-from iomete_sdk.api_utils import ClientError
 
-HOST = "<YOUR_DATAPLANE_HOST>" # https://dataplane-endpoint.example.com
-API_KEY = "<YOU_IOMETE_API_KEY>"
+HOST = "<DATAPLANE_HOST>" # https://dataplane-endpoint.example.com
+API_KEY = "<IOMETE_API_KEY>"
+DOMAIN = "<IOMETE_DOMAIN>"
 
 job_client = SparkJobApiClient(
     host=HOST,
     api_key=API_KEY,
+    domain=DOMAIN
 )
 ```
 

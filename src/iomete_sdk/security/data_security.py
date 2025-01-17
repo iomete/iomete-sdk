@@ -5,8 +5,6 @@ from typing import List
 from iomete_sdk.api_utils import ClientError, APIUtils
 from iomete_sdk.security.policy_models import AccessPolicyView, RowFilterPolicyView, DataMaskPolicyView
 
-DATA_SECURITY_ENDPOINT = "/api/v1/data-security"
-
 
 @dataclass
 class DataSecurityApiClient:
@@ -14,6 +12,7 @@ class DataSecurityApiClient:
 
     host: str
     api_key: str
+    domain: str
 
     data_security_endpoint: str = None
     api_utils: APIUtils = None
@@ -22,7 +21,7 @@ class DataSecurityApiClient:
         self.api_utils = APIUtils(self.api_key)
 
         self.logger.debug(f"Host: {self.host}")
-        self.data_security_endpoint = self.host + DATA_SECURITY_ENDPOINT
+        self.data_security_endpoint = f"{self.host}/api/v1/domains/{self.domain}/data-security"
 
     def create_access_policy(self, policy: AccessPolicyView) -> AccessPolicyView:
         data = self.api_utils.call(method="POST",

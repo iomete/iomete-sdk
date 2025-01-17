@@ -5,7 +5,7 @@ import pytest as pytest
 
 from iomete_sdk.spark import SparkJobApiClient
 from iomete_sdk.api_utils import ClientError
-from tests import TEST_TOKEN, TEST_HOST
+from tests import TEST_TOKEN, TEST_HOST, TEST_DOMAIN
 
 SPARK_VERSION = "3.5.3"
 
@@ -49,6 +49,7 @@ def job_client():
     return SparkJobApiClient(
         host=TEST_HOST,
         api_key=TEST_TOKEN,
+        domain=TEST_DOMAIN
     )
 
 
@@ -95,9 +96,9 @@ def test_update_job(job_client, create_payload):
 def test_get_jobs(job_client):
     response = job_client.get_jobs()
 
-    assert len(response["items"]) > 0
+    assert len(response) > 0
 
-    job = response["items"][0]
+    job = response[0]
     assert job["id"] is not None
 
 
