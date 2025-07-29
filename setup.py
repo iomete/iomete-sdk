@@ -26,7 +26,7 @@ setup(
         'dev': ['pytest']
     },
     install_requires=[
-        "requests==2.32.3",
+        "requests==2.32.4",
         "dataclasses-json==0.6.7",
     ],
     classifiers=[
