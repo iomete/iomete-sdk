@@ -2,7 +2,7 @@ import os
 from distutils.core import setup
 
 package_name = "iomete_sdk"
-package_version = "3.0.0"
+package_version = "3.0.1"
 
 description = """IOMETE SDK for Python."""
 
@@ -26,7 +26,7 @@ setup(
         'dev': ['pytest']
     },
     install_requires=[
-        "requests==2.32.4",
+        "requests==2.32.5",
         "dataclasses-json==0.6.7",
     ],
     classifiers=[
@@ -36,11 +36,11 @@ setup(
         "Operating System :: Microsoft :: Windows",
         "Operating System :: MacOS :: MacOS X",
         "Operating System :: POSIX :: Linux",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
     ],
-    python_requires=">=3.8",
+    python_requires=">=3.9",
 )
