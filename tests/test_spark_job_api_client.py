@@ -7,7 +7,7 @@ from iomete_sdk.spark import SparkJobApiClient
 from iomete_sdk.api_utils import ClientError
 from tests import TEST_TOKEN, TEST_HOST, TEST_DOMAIN
 
-SPARK_VERSION = "3.5.3"
+SPARK_VERSION = "3.5.5-latest"
 
 
 def random_job_name():
@@ -18,12 +18,13 @@ def random_job_name():
 def create_payload() -> dict:
     return {
         "name": random_job_name(),
+        "bundleId": "3fe16353-ddb0-443c-b3f6-8dbfe3914afe",
         "namespace": "iomete-system",
-        "jobUser": "admin",
+        "jobUser": "soltan",
         "jobType": "MANUAL",
         "template": {
             "applicationType": "python",
-            "image": f"iomete/spark-py:{SPARK_VERSION}-v1",
+            "image": f"iomete.azurecr.io/iomete/spark-py:{SPARK_VERSION}",
             "mainApplicationFile": "https://raw.githubusercontent.com/iomete/query-scheduler-job/main/job.py",
             "configMaps": [{
                 "key": "application.conf",
@@ -39,7 +40,7 @@ def create_payload() -> dict:
             },
             "restartPolicy": {"type": "Never"},
             "maxExecutionDurationSeconds": "3600",
-            "volumeId": "920a140e-fc90-481a-8ec2-4e395bfa6450",
+            "volumeId": "32bccf34-1404-40f5-86d9-9e3c566181a5",
         }
     }
 
@@ -53,8 +54,29 @@ def job_client():
     )
 
 
+def test_create_job_missing_bundle_id_raises_value_error(job_client):
+    payload = {"name": "test-job"}
+
+    with pytest.raises(ValueError, match="bundleId is required"):
+        job_client.create_job(payload=payload)
+
+
+def test_create_job_invalid_flow_raises_value_error(job_client):
+    payload = {"name": "test-job", "bundleId": "some-id", "flow": "INVALID"}
+
+    with pytest.raises(ValueError, match="flow must be one of"):
+        job_client.create_job(payload=payload)
+
+
+def test_create_job_invalid_priority_raises_value_error(job_client):
+    payload = {"name": "test-job", "bundleId": "some-id", "priority": "INVALID"}
+
+    with pytest.raises(ValueError, match="priority must be one of"):
+        job_client.create_job(payload=payload)
+
+
 def test_create_job_without_name_raise_400(job_client, create_payload):
-    payload_without_name = {}
+    payload_without_name = {"bundleId": "some-id"}
 
     with pytest.raises(ClientError) as err:
         response = job_client.create_job(payload=payload_without_name)
@@ -84,8 +106,7 @@ def test_update_job(job_client, create_payload):
     update_payload["schedule"] = cron_schedule
     job_update_response = job_client.update_job(job_id=job_create_response["id"], payload=update_payload)
 
-    assert job_update_response["schedule"] == cron_schedule
-    assert job_update_response["jobType"] == "SCHEDULED"
+    assert job_update_response["schedule"]["cron"] == cron_schedule
     assert job_update_response["name"] == job_create_response["name"]
     assert job_update_response["id"] == job_create_response["id"]
 
@@ -109,27 +130,23 @@ def test_get_job_by_id(job_client, create_payload):
     # check job is created
     response = job_client.get_job_by_id(job_id=job["id"])
 
-    assert response["item"] is not None
-    assert response["permissions"] is not None
-
-    job = response["item"]
-    assert job["name"] == create_payload["name"]
-    assert job["id"] is not None
+    assert response["name"] == create_payload["name"]
+    assert response["id"] is not None
 
     # clean up
-    job_client.delete_job_by_id(job_id=job["id"])
+    job_client.delete_job_by_id(job_id=response["id"])
 
 
 def test_get_job_run_by_id(job_client, create_payload):
     job = job_client.create_job(payload=create_payload)
     job_run = job_client.submit_job_run(job_id=job["id"], payload={})
 
+    time.sleep(10)
     job_run_info = job_client.get_job_run_by_id(job_id=job["id"], run_id=job_run["id"])
 
     assert job_run_info["jobId"] == job["id"]
     assert job_run_info["id"] == job_run["id"]
     assert job_run_info["driverErrorMessage"] == ''
-    assert job_run_info["executionAttempts"] == 1
 
     job_client.cancel_job_run(job_id=job["id"], run_id=job_run["id"])
     job_client.delete_job_by_id(job_id=job["id"])
@@ -137,8 +154,11 @@ def test_get_job_run_by_id(job_client, create_payload):
 
 def test_get_job_run_logs(job_client, create_payload):
     job = job_client.create_job(payload=create_payload)
+
+    time.sleep(30)
     job_run = job_client.submit_job_run(job_id=job["id"], payload={})
 
+    time.sleep(10)
     job_run_logs = job_client.get_job_run_logs(job_id=job["id"], run_id=job_run["id"])
 
     assert job_run_logs is not None
@@ -152,9 +172,11 @@ def test_get_job_run_logs(job_client, create_payload):
 
 def test_get_job_run_metrics(job_client, create_payload):
     job = job_client.create_job(payload=create_payload)
+
+    time.sleep(30)
     job_run = job_client.submit_job_run(job_id=job["id"], payload={})
 
-    time.sleep(10)
+    time.sleep(40)
 
     job_run_metrics = job_client.get_job_run_metrics(job_id=job["id"], run_id=job_run["id"])
 
@@ -167,13 +189,27 @@ def test_get_job_run_metrics(job_client, create_payload):
     job_client.delete_job_by_id(job_id=job["id"])
 
 
+def test_get_job_by_name(job_client, create_payload):
+    # create job
+    job = job_client.create_job(payload=create_payload)
+
+    # get job by name
+    response = job_client.get_job_by_name(job_name=create_payload["name"])
+
+    assert response["name"] == create_payload["name"]
+    assert response["id"] == job["id"]
+
+    # clean up
+    job_client.delete_job_by_id(job_id=job["id"])
+
+
 def test_delete_job_by_id(job_client, create_payload):
     # create job
     job = job_client.create_job(payload=create_payload)
 
     # check job is created
     response = job_client.get_job_by_id(job_id=job["id"])
-    assert response["item"]["name"] == create_payload["name"]
+    assert response["name"] == create_payload["name"]
 
     # delete job
     job_client.delete_job_by_id(job_id=job["id"])

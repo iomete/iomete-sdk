@@ -1,6 +1,6 @@
 # IOMETE SDK
 
-This is the IOMETE SDK for Python. 
+This is the IOMETE SDK for Python.
 It provides convenient access to the IOMETE API from applications written in the Python language.
 
 ## Installation
@@ -16,6 +16,7 @@ pip install iomete-sdk
 ### Import and initialize the client
 ```python
 from iomete_sdk.spark import SparkJobApiClient
+from iomete_sdk.spark.spark_job import Flow, Priority
 
 HOST = "<DATAPLANE_HOST>" # https://dataplane-endpoint.example.com
 API_KEY = "<IOMETE_API_KEY>"
@@ -28,10 +29,20 @@ job_client = SparkJobApiClient(
 )
 ```
 
+### Enums
+
+The SDK provides strict enum validation for `flow` and `priority` fields:
+
+- **Flow**: `Flow.LEGACY` (`"LEGACY"`), `Flow.PRIORITY` (`"PRIORITY"`)
+- **Priority**: `Priority.NORMAL` (`"NORMAL"`), `Priority.HIGH` (`"HIGH"`)
+
 ### Create a new job
 ```python
 response = job_client.create_job(payload={
         "name": "job-name",
+        "bundleId": "bundle-id",
+        "flow": Flow.LEGACY.value,
+        "priority": Priority.NORMAL.value,
         "namespace": "k8s-namespace",
         "jobUser": "job-user",
         "jobType": "MANUAL/SCHEDULED/STREAMING",
@@ -60,14 +71,21 @@ response = job_client.create_job(payload={
 job_id = response["id"]
 ```
 
+**Note:** `bundleId` is required. `flow` and `priority` are optional but validated against enum values if provided.
+
 ### Get jobs
 ```python
 response = job_client.get_jobs()
 ```
 
-### Get job
+### Get job by ID
 ```python
-response = job_client.get_job(job_id=job_id)
+response = job_client.get_job_by_id(job_id=job_id)
+```
+
+### Get job by name
+```python
+response = job_client.get_job_by_name(job_name="job-name")
 ```
 
 ### Update job
@@ -77,7 +95,7 @@ response = job_client.update_job(job_id=job_id, payload=updated_payload)
 
 ### Delete job
 ```python
-response = job_client.delete_job(job_id=job_id)
+response = job_client.delete_job_by_id(job_id=job_id)
 ```
 
 
@@ -98,19 +116,16 @@ response = job_client.get_job_runs(job_id=job_id)
 
 ### Get Job Run
 ```python
-response = job_client.get_job_run(job_id=job_id, run_id=run_id)
+response = job_client.get_job_run_by_id(job_id=job_id, run_id=run_id)
 ```
 
 ### Get Job Run Logs
 ```python
 response = job_client.get_job_run_logs(job_id=job_id, run_id=run_id, time_range="5m")
 ```
-**Supported Time Range:** 5m, 15m, 30m, 1h, 3h, 6h, 12h, 24h, 2d, 7d, 14d, 30d 
+**Supported Time Range:** 5m, 15m, 30m, 1h, 3h, 6h, 12h, 24h, 2d, 7d, 14d, 30d
 
 ### Get Job Run Metrics
 ```python
 response = job_client.get_job_run_metrics(job_id=job_id, run_id=run_id)
 ```
-
-
-
